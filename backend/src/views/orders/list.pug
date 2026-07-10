@@ -1,0 +1,29 @@
+extends ../layout.pug
+
+block content
+  h2 Orders
+
+  if orders.length === 0
+    p No orders yet. The penguins haven't ordered anything from their igloos.
+  else
+    table
+      thead
+        tr
+          th Customer
+          th Igloo Address
+          th Items
+          th Total
+          th Date
+      tbody
+        each order in orders
+          tr
+            td= order.customerName
+            td= order.iglooAddress
+            td
+              ul
+                each item in order.items
+                  li= `${item.name} x${item.quantity} ($${item.price} each)`
+            td $#{order.total}
+            td= new Date(order.createdAt).toLocaleString()
+
+  a(href="/") Back to dashboard

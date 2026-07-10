@@ -8,6 +8,7 @@ const { connectDB } = require('./config/db');
 const { requireAuth } = require('./middlewares/auth');
 const authRoutes = require('./routes/auth.routes');
 const productsRoutes = require('./routes/products.routes');
+const ordersRoutes = require('./routes/orders.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,6 +51,8 @@ async function startServer() {
 
   // Product routes - todas protegidas, solo Paula puede gestionar productos
   app.use('/products', requireAuth, productsRoutes);
+
+  app.use('/orders', requireAuth, ordersRoutes);
 
   // Dashboard - protegido, requiere sesión activa
   app.get('/', requireAuth, (req, res) => {
