@@ -1,5 +1,16 @@
 extends layout.pug
 
 block content
-  h2 Welcome to the store
-  p Products coming soon.
+  h2 Our Products
+
+  if products.length === 0
+    p No products available right now. Check back soon!
+  else
+    .product-grid
+      each product in products
+        .product-card
+          a(href=`/products/${product._id}`)
+            img(src=product.imageUrl alt=product.name width="150")
+            h3= product.name
+            p.category= product.category
+            p.price $#{product.price}

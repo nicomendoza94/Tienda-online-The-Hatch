@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const { connectDB } = require('./config/db');
+const shopRoutes = require('./routes/shop.routes');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -13,15 +14,13 @@ app.set('views', path.join(__dirname, 'views'));
 // Static files (CSS)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Parse form data (necesario para el formulario de checkout)
+// Parse form data (necesario para el formulario de checkout, próximo paso)
 app.use(express.urlencoded({ extended: true }));
 
 async function startServer() {
   await connectDB();
 
-  app.get('/', (req, res) => {
-    res.render('index', { title: 'Larry Penguin Store 🐧' });
-  });
+  app.use('/', shopRoutes);
 
   app.listen(PORT, () => {
     console.log(`🚀 Store running on http://localhost:${PORT}`);

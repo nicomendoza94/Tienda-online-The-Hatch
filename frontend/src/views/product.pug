@@ -1,0 +1,18 @@
+extends layout.pug
+
+block content
+  a(href="/") ← Back to store
+
+  .product-detail
+    img(src=product.imageUrl alt=product.name width="300")
+    h2= product.name
+    p.category Category: #{product.category}
+    p.description= product.description
+    p.price $#{product.price}
+    p.stock= product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'
+
+    if product.stock > 0
+      a(href=`/checkout/${product._id}`)
+        button Order this
+    else
+      button(disabled) Out of stock
