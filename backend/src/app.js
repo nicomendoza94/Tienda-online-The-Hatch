@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 const { connectDB } = require('./config/db');
 const { requireAuth } = require('./middlewares/auth');
 const authRoutes = require('./routes/auth.routes');
+const productsRoutes = require('./routes/products.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
 // Simula PUT/DELETE desde formularios HTML (que solo soportan GET/POST)
+// Busca el campo "_method" en el querystring o el body del form
 app.use(methodOverride('_method'));
 
 async function startServer() {
@@ -37,14 +39,17 @@ async function startServer() {
       collectionName: 'sessions',
     }),
     cookie: {
-      httpOnly: true, // el cookie no es accesible desde JS del navegador
-      secure: process.env.NODE_ENV === 'production', // solo HTTPS en producción
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 60 * 2, // 2 horas
     },
   }));
 
-  // Auth routes (/login, /logout) - no requieren estar logueado
+  // Auth routes (/login, /logout) - no requieren sesión activa
   app.use('/', authRoutes);
+
+  // Product routes - todas protegidas, solo Paula puede gestionar productos
+  app.use('/products', requireAuth, productsRoutes);
 
   // Dashboard - protegido, requiere sesión activa
   app.get('/', requireAuth, (req, res) => {

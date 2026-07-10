@@ -1,0 +1,34 @@
+extends ../layout.pug
+
+block content
+  h2 Products
+  a(href="/products/new") + Add new product
+
+  if products.length === 0
+    p No products yet.
+  else
+    table
+      thead
+        tr
+          th Image
+          th Name
+          th Category
+          th Price
+          th Stock
+          th Actions
+      tbody
+        each product in products
+          tr
+            td
+              img(src=product.imageUrl alt=product.name width="60")
+            td= product.name
+            td= product.category
+            td $#{product.price}
+            td= product.stock
+            td
+              a(href=`/products/${product._id}/edit`) Edit
+              |  
+              form(method="POST" action=`/products/${product._id}?_method=DELETE` style="display:inline")
+                button(type="submit" onclick="return confirm('Delete this product?')") Delete
+
+  a(href="/") Back to dashboard

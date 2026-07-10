@@ -2,7 +2,10 @@ extends layout.pug
 
 block content
   h2 Welcome, #{username}!
-  p This is the admin dashboard. Products and orders management coming soon.
+  p This is the admin dashboard.
+
+  nav
+    a(href="/products") Manage products
 
   form(method="POST" action="/logout")
     button(type="submit") Log out

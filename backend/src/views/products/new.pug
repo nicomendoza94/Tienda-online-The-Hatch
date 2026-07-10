@@ -1,0 +1,32 @@
+extends ../layout.pug
+
+block content
+  h2 New Product
+
+  if error
+    p.error= error
+
+  form(method="POST" action="/products" enctype="multipart/form-data")
+    div
+      label(for="name") Name
+      input(type="text" id="name" name="name" required)
+    div
+      label(for="description") Description
+      textarea(id="description" name="description" required)
+    div
+      label(for="price") Price
+      input(type="number" id="price" name="price" step="0.01" min="0.01" required)
+    div
+      label(for="stock") Stock
+      input(type="number" id="stock" name="stock" min="0" required)
+    div
+      label(for="category") Category
+      select(id="category" name="category" required)
+        each cat in categories
+          option(value=cat)= cat
+    div
+      label(for="image") Product image
+      input(type="file" id="image" name="image" accept="image/*" required)
+    button(type="submit") Create product
+
+  a(href="/products") Cancel
