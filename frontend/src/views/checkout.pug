@@ -1,0 +1,27 @@
+extends layout.pug
+
+block content
+  a(href=`/products/${product._id}`) ← Back to product
+
+  h2 Order: #{product.name}
+
+  if error
+    p.error= error
+
+  .checkout-summary
+    img(src=product.imageUrl alt=product.name width="100")
+    p Price per unit: $#{product.price}
+    p Available stock: #{product.stock}
+
+  form(method="POST" action="/orders")
+    input(type="hidden" name="productId" value=product._id)
+    div
+      label(for="customerName") Your name
+      input(type="text" id="customerName" name="customerName" required)
+    div
+      label(for="iglooAddress") Igloo address
+      input(type="text" id="iglooAddress" name="iglooAddress" placeholder="e.g. Iceberg 7, South Sector" required)
+    div
+      label(for="quantity") Quantity
+      input(type="number" id="quantity" name="quantity" min="1" max=product.stock value="1" required)
+    button(type="submit") Confirm order

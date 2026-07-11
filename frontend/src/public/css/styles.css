@@ -95,3 +95,52 @@ button:disabled {
   background-color: #999;
   cursor: not-allowed;
 }
+
+.checkout-summary {
+  background: #eef2f7;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+form div {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+textarea,
+select {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.error {
+  background-color: #fde8e8;
+  color: #c0392b;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.total {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #1e3a5f;
+  margin-top: 1rem;
+}
+
+.address {
+  font-style: italic;
+}
