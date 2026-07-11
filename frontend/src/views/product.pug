@@ -1,18 +1,19 @@
 extends layout.pug
 
 block content
-  a(href="/") ← Back to store
+  a.back-link(href="/") ← Back to store
 
   .product-detail
-    img(src=product.imageUrl alt=product.name width="300")
+    img(src=product.imageUrl alt=product.name)
     h2= product.name
-    p.category Category: #{product.category}
+    span.ice-chip= product.category
     p.description= product.description
     p.price $#{product.price}
-    p.stock= product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'
 
     if product.stock > 0
+      p.stock-status.in-stock= `${product.stock} in stock`
       a(href=`/checkout/${product._id}`)
-        button Order this
+        button(type="button") Order this
     else
+      p.stock-status.out-of-stock Out of stock
       button(disabled) Out of stock

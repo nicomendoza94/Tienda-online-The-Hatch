@@ -2,11 +2,13 @@ extends ../layout.pug
 
 block content
   h2 Orders
+  nav.actions
+    a(href="/") Back to dashboard
 
   if orders.length === 0
-    p No orders yet. The penguins haven't ordered anything from their igloos.
+    p.empty-state No orders yet. The penguins haven't ordered anything from their igloos.
   else
-    table
+    table.manifest-table
       thead
         tr
           th Customer
@@ -22,8 +24,6 @@ block content
             td
               ul
                 each item in order.items
-                  li= `${item.name} x${item.quantity} ($${item.price} each)`
-            td $#{order.total}
-            td= new Date(order.createdAt).toLocaleString()
-
-  a(href="/") Back to dashboard
+                  li.num= `${item.name} x${item.quantity} ($${item.price} each)`
+            td.price $#{order.total}
+            td.num= new Date(order.createdAt).toLocaleString()

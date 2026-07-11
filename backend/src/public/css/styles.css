@@ -1,3 +1,17 @@
+/* ===== Design tokens — "Polar Ledger" ===== */
+:root {
+  --polar-navy: #0E2439;
+  --glacier: #3E7CB1;
+  --ice-white: #F3F8FB;
+  --frost: #C9E4F6;
+  --coral: #FF6F59;
+  --aurora: #6FCF97;
+
+  --font-display: "Fraunces", serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -5,26 +19,278 @@
 }
 
 body {
-  font-family: system-ui, sans-serif;
-  background-color: #f0f4f8;
-  color: #1a1a1a;
+  font-family: var(--font-body);
+  background-color: var(--ice-white);
+  color: var(--polar-navy);
+  line-height: 1.5;
 }
 
-header {
-  background-color: #1e3a5f;
+a {
+  color: var(--glacier);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--coral);
+  outline-offset: 2px;
+}
+
+h2, h3 {
+  font-family: var(--font-display);
+  color: var(--polar-navy);
+}
+
+h2 { font-size: 1.9rem; margin-bottom: 1rem; }
+h3 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+
+/* ===== Header ===== */
+.site-header {
+  background: linear-gradient(135deg, var(--polar-navy) 0%, #16324a 100%);
   color: white;
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 2rem;
 }
 
+.header-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: white;
+}
+
+.brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  background: var(--ice-white);
+  border-radius: 50%;
+  font-size: 1.2rem;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.brand-tag {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--frost);
+  letter-spacing: 0.04em;
+}
+
+/* ===== Main ===== */
 main {
-  padding: 2rem;
-  max-width: 900px;
+  padding: 2.5rem 2rem;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
-footer {
+.site-footer {
   text-align: center;
-  padding: 1rem;
-  color: #666;
+  padding: 1.5rem;
+  color: var(--glacier);
   font-size: 0.85rem;
+  font-family: var(--font-mono);
+}
+
+/* ===== Nav links (dashboard) ===== */
+nav.actions {
+  display: flex;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+nav.actions a {
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  background: var(--frost);
+}
+
+/* ===== Ice shard chip (signature element) — category badge ===== */
+.ice-chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--frost);
+  color: var(--polar-navy);
+  padding: 0.25rem 0.6rem;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 88% 100%, 0 100%);
+}
+
+/* ===== Forms ===== */
+form div {
+  margin-bottom: 1.1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="file"],
+textarea,
+select {
+  width: 100%;
+  max-width: 420px;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--frost);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: var(--font-body);
+  background: white;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+button {
+  font-family: var(--font-body);
+  font-weight: 600;
+  background-color: var(--coral);
+  color: white;
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button:hover {
+  filter: brightness(0.95);
+}
+
+button.secondary {
+  background-color: var(--glacier);
+}
+
+.error {
+  background-color: #FEE9E5;
+  border-left: 4px solid var(--coral);
+  color: #9A3B2C;
+  padding: 0.8rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.2rem;
+  font-size: 0.9rem;
+}
+
+/* ===== Manifest table (products / orders) ===== */
+.manifest-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(14, 36, 57, 0.08);
+  margin: 1.5rem 0;
+}
+
+.manifest-table thead {
+  background: var(--polar-navy);
+  color: white;
+}
+
+.manifest-table th {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+}
+
+.manifest-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--frost);
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.manifest-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.manifest-table tbody tr:nth-child(even) {
+  background: rgba(201, 228, 246, 0.25);
+}
+
+.manifest-table img {
+  border-radius: 4px;
+  display: block;
+}
+
+.num {
+  font-family: var(--font-mono);
+  color: var(--polar-navy);
+}
+
+.price {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--coral);
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.actions-cell form {
+  margin: 0;
+}
+
+.btn-danger {
+  background-color: transparent;
+  color: #9A3B2C;
+  border: 1px solid #9A3B2C;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.empty-state {
+  background: var(--frost);
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  color: var(--polar-navy);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+}
+
+.current-image {
+  margin-bottom: 1rem;
+}
+
+.current-image img {
+  border-radius: 6px;
+  display: block;
+  margin-top: 0.4rem;
 }

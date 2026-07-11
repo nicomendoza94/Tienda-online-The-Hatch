@@ -1,16 +1,17 @@
 extends layout.pug
 
 block content
-  h2 Our Products
+  h2 Fresh from the iceberg
+  p Browse what's in stock today.
 
   if products.length === 0
-    p No products available right now. Check back soon!
+    p.empty-state No products available right now. Check back soon!
   else
     .product-grid
       each product in products
         .product-card
           a(href=`/products/${product._id}`)
-            img(src=product.imageUrl alt=product.name width="150")
+            img(src=product.imageUrl alt=product.name)
             h3= product.name
-            p.category= product.category
-            p.price $#{product.price}
+            span.ice-chip= product.category
+            span.price $#{product.price}

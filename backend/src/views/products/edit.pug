@@ -24,11 +24,13 @@ block content
       select(id="category" name="category" required)
         each cat in categories
           option(value=cat selected=(cat === product.category))= cat
-    div
+    div.current-image
       p Current image:
-      img(src=product.imageUrl alt=product.name width="100")
+      img(src=product.imageUrl alt=product.name width="120")
+    div
       label(for="image") Replace image (optional)
       input(type="file" id="image" name="image" accept="image/*")
     button(type="submit") Save changes
 
-  a(href="/products") Cancel
+  nav.actions
+    a(href="/products") Cancel

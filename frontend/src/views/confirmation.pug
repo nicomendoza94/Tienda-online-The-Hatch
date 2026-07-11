@@ -3,14 +3,15 @@ extends layout.pug
 block content
   h2 🐧 Order confirmed!
 
-  p Thank you, #{order.customerName}. Your fish is on its way to:
-  p.address= order.iglooAddress
+  .confirmation-card
+    p Thank you, #{order.customerName}. Your fish is on its way to:
+    p.address= order.iglooAddress
 
-  h3 Order summary
-  ul
-    each item in order.items
-      li= `${item.name} x${item.quantity} - $${item.price} each`
+    h3 Order summary
+    ul
+      each item in order.items
+        li= `${item.name} x${item.quantity} - $${item.price} each`
 
-  p.total Total: $#{order.total}
+    p.total-line Total: $#{order.total}
 
-  a(href="/") ← Back to store
+    a.back-link(href="/") ← Back to store

@@ -2,12 +2,14 @@ extends ../layout.pug
 
 block content
   h2 Products
-  a(href="/products/new") + Add new product
+  nav.actions
+    a(href="/products/new") + Add new product
+    a(href="/") Back to dashboard
 
   if products.length === 0
-    p No products yet.
+    p.empty-state No products yet. Add the first one to get Larry's legacy started.
   else
-    table
+    table.manifest-table
       thead
         tr
           th Image
@@ -20,15 +22,13 @@ block content
         each product in products
           tr
             td
-              img(src=product.imageUrl alt=product.name width="60")
+              img(src=product.imageUrl alt=product.name width="56" height="56" style="object-fit:cover")
             td= product.name
-            td= product.category
-            td $#{product.price}
-            td= product.stock
             td
+              span.ice-chip= product.category
+            td.price $#{product.price}
+            td.num= product.stock
+            td.actions-cell
               a(href=`/products/${product._id}/edit`) Edit
-              |  
-              form(method="POST" action=`/products/${product._id}?_method=DELETE` style="display:inline")
-                button(type="submit" onclick="return confirm('Delete this product?')") Delete
-
-  a(href="/") Back to dashboard
+              form(method="POST" action=`/products/${product._id}?_method=DELETE`)
+                button.btn-danger(type="submit" onclick="return confirm('Delete this product?')") Delete
