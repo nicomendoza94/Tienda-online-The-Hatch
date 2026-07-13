@@ -1,7 +1,7 @@
 // Handles product browsing for the public store (read-only, no auth needed).
+// Data access is delegated to the products model.
 
-const { ObjectId } = require('mongodb');
-const { getDB } = require('../config/db');
+const productsModel = require('../models/products.model');
 
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';
 
@@ -17,12 +17,7 @@ function toFullImageUrl(product) {
 // GET / - list all products available in the store
 async function listProducts(req, res) {
   try {
-    const db = getDB();
-    const products = await db.collection('products')
-      .find()
-      .sort({ createdAt: -1 })
-      .toArray();
-
+    const products = await productsModel.findAll();
     const productsWithFullImages = products.map(toFullImageUrl);
 
     res.render('index', {
@@ -38,8 +33,7 @@ async function listProducts(req, res) {
 // GET /products/:id - show a single product's detail page
 async function showProduct(req, res) {
   try {
-    const db = getDB();
-    const product = await db.collection('products').findOne({ _id: new ObjectId(req.params.id) });
+    const product = await productsModel.findById(req.params.id);
 
     if (!product) {
       return res.status(404).send('Product not found');

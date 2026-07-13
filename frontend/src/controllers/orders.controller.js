@@ -1,15 +1,19 @@
 // Handles order creation from the public store (no auth, no cart — direct order flow).
+// Data access is delegated to the products and orders models.
 
-const { ObjectId } = require('mongodb');
-const { getDB } = require('../config/db');
+const productsModel = require('../models/products.model');
+const ordersModel = require('../models/orders.model');
 
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';
+
+function toFullImageUrl(product) {
+  return { ...product, imageUrl: `${BACKEND_URL}${product.imageUrl}` };
+}
 
 // GET /checkout/:productId - show the order form for a single product
 async function showCheckoutForm(req, res) {
   try {
-    const db = getDB();
-    const product = await db.collection('products').findOne({ _id: new ObjectId(req.params.productId) });
+    const product = await productsModel.findById(req.params.productId);
 
     if (!product) {
       return res.status(404).send('Product not found');
@@ -21,7 +25,7 @@ async function showCheckoutForm(req, res) {
 
     res.render('checkout', {
       title: `Order ${product.name} - Larry Penguin Store`,
-      product: { ...product, imageUrl: `${BACKEND_URL}${product.imageUrl}` },
+      product: toFullImageUrl(product),
       error: null,
     });
   } catch (error) {
@@ -36,18 +40,16 @@ async function createOrder(req, res) {
   const quantityNumber = Number(quantity);
 
   try {
-    const db = getDB();
-    const product = await db.collection('products').findOne({ _id: new ObjectId(productId) });
+    const product = await productsModel.findById(productId);
 
     if (!product) {
       return res.status(404).send('Product not found');
     }
 
-    // Basic server-side validation
     if (!customerName || !iglooAddress || isNaN(quantityNumber) || quantityNumber <= 0) {
       return res.render('checkout', {
         title: `Order ${product.name} - Larry Penguin Store`,
-        product: { ...product, imageUrl: `${BACKEND_URL}${product.imageUrl}` },
+        product: toFullImageUrl(product),
         error: 'Please fill in your name, igloo address, and a valid quantity.',
       });
     }
@@ -55,7 +57,7 @@ async function createOrder(req, res) {
     if (quantityNumber > product.stock) {
       return res.render('checkout', {
         title: `Order ${product.name} - Larry Penguin Store`,
-        product: { ...product, imageUrl: `${BACKEND_URL}${product.imageUrl}` },
+        product: toFullImageUrl(product),
         error: `Only ${product.stock} unit(s) available.`,
       });
     }
@@ -78,13 +80,10 @@ async function createOrder(req, res) {
       createdAt: new Date(),
     };
 
-    const result = await db.collection('orders').insertOne(order);
+    const result = await ordersModel.create(order);
 
     // Reduce stock accordingly, now that the order is confirmed
-    await db.collection('products').updateOne(
-      { _id: product._id },
-      { $inc: { stock: -quantityNumber } }
-    );
+    await productsModel.decreaseStock(product._id, quantityNumber);
 
     res.redirect(`/orders/${result.insertedId}/confirmation`);
   } catch (error) {
@@ -96,8 +95,7 @@ async function createOrder(req, res) {
 // GET /orders/:id/confirmation - show the confirmation page for a created order
 async function showConfirmation(req, res) {
   try {
-    const db = getDB();
-    const order = await db.collection('orders').findOne({ _id: new ObjectId(req.params.id) });
+    const order = await ordersModel.findById(req.params.id);
 
     if (!order) {
       return res.status(404).send('Order not found');

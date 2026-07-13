@@ -1,21 +1,17 @@
 // Handles all CRUD operations for products.
-// Uses the native MongoDB driver directly (no ODM).
+// Data access is delegated to the products model; this file focuses
+// on request/response handling, validation, and orchestration.
 
-const { ObjectId } = require('mongodb');
 const fs = require('fs');
 const path = require('path');
-const { getDB } = require('../config/db');
+const productsModel = require('../models/products.model');
 
 const CATEGORIES = ['pescado', 'hielo', 'esmoquin'];
 
 // GET /products - list all products
 async function listProducts(req, res) {
   try {
-    const db = getDB();
-    const products = await db.collection('products')
-      .find()
-      .sort({ createdAt: -1 })
-      .toArray();
+    const products = await productsModel.findAll();
 
     res.render('products/list', {
       title: 'Products - Admin Panel',
@@ -42,7 +38,6 @@ function showNewForm(req, res) {
 async function createProduct(req, res) {
   const { name, description, price, stock, category } = req.body;
 
-  // Basic server-side validation
   const priceNumber = Number(price);
   const stockNumber = Number(stock);
 
@@ -73,7 +68,6 @@ async function createProduct(req, res) {
     });
   }
 
-  // Image is required (per project decision)
   if (!req.file) {
     return res.render('products/new', {
       title: 'New Product - Admin Panel',
@@ -84,10 +78,9 @@ async function createProduct(req, res) {
   }
 
   try {
-    const db = getDB();
     const imageUrl = `/uploads/${req.file.filename}`;
 
-    await db.collection('products').insertOne({
+    await productsModel.create({
       name,
       description,
       price: priceNumber,
@@ -113,8 +106,7 @@ async function createProduct(req, res) {
 // GET /products/:id/edit - show the "edit product" form
 async function showEditForm(req, res) {
   try {
-    const db = getDB();
-    const product = await db.collection('products').findOne({ _id: new ObjectId(req.params.id) });
+    const product = await productsModel.findById(req.params.id);
 
     if (!product) {
       return res.status(404).send('Product not found');
@@ -142,8 +134,7 @@ async function updateProduct(req, res) {
   const stockNumber = Number(stock);
 
   try {
-    const db = getDB();
-    const existingProduct = await db.collection('products').findOne({ _id: new ObjectId(id) });
+    const existingProduct = await productsModel.findById(id);
 
     if (!existingProduct) {
       return res.status(404).send('Product not found');
@@ -159,8 +150,6 @@ async function updateProduct(req, res) {
       });
     }
 
-    // Build the update object. If a new image was uploaded, replace it
-    // and delete the old file from disk to avoid orphaned files.
     const updateData = {
       name,
       description,
@@ -180,10 +169,7 @@ async function updateProduct(req, res) {
       });
     }
 
-    await db.collection('products').updateOne(
-      { _id: new ObjectId(id) },
-      { $set: updateData }
-    );
+    await productsModel.updateById(id, updateData);
 
     res.redirect('/products');
   } catch (error) {
@@ -197,14 +183,13 @@ async function deleteProduct(req, res) {
   const { id } = req.params;
 
   try {
-    const db = getDB();
-    const product = await db.collection('products').findOne({ _id: new ObjectId(id) });
+    const product = await productsModel.findById(id);
 
     if (!product) {
       return res.status(404).send('Product not found');
     }
 
-    await db.collection('products').deleteOne({ _id: new ObjectId(id) });
+    await productsModel.deleteById(id);
 
     // Clean up the image file from disk
     const imagePath = path.join(__dirname, '..', 'public', product.imageUrl);

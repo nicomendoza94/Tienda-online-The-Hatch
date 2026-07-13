@@ -1,9 +1,11 @@
+// Handles admin authentication: login form, credential validation, logout.
+// Data access is delegated to the admins model.
+
 const bcrypt = require('bcrypt');
-const { getDB } = require('../config/db');
+const adminsModel = require('../models/admins.model');
 
 // Renders the login form
 function showLoginForm(req, res) {
-  // If already logged in, skip the form and go straight to the dashboard
   if (req.session && req.session.adminId) {
     return res.redirect('/');
   }
@@ -22,8 +24,7 @@ async function login(req, res) {
   }
 
   try {
-    const db = getDB();
-    const admin = await db.collection('admins').findOne({ username });
+    const admin = await adminsModel.findByUsername(username);
 
     if (!admin) {
       return res.render('login', {
@@ -32,7 +33,6 @@ async function login(req, res) {
       });
     }
 
-    // Compare the plain text password with the stored hash
     const passwordMatches = await bcrypt.compare(password, admin.passwordHash);
 
     if (!passwordMatches) {
@@ -42,7 +42,6 @@ async function login(req, res) {
       });
     }
 
-    // Credentials are valid: store the admin's id in the session
     req.session.adminId = admin._id;
     req.session.username = admin.username;
 

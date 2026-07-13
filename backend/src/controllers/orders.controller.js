@@ -1,16 +1,12 @@
-// Handles order visualization for the admin panel.
-// Orders are only created from the public store (frontend); here we only read them.
+// Handles order visualization for the admin panel (read-only).
+// Data access is delegated to the orders model.
 
-const { getDB } = require('../config/db');
+const ordersModel = require('../models/orders.model');
 
 // GET /orders - list all orders, most recent first
 async function listOrders(req, res) {
   try {
-    const db = getDB();
-    const orders = await db.collection('orders')
-      .find()
-      .sort({ createdAt: -1 })
-      .toArray();
+    const orders = await ordersModel.findAll();
 
     res.render('orders/list', {
       title: 'Orders - Admin Panel',
