@@ -1,22 +1,21 @@
-// Handles admin authentication: login form, credential validation, logout.
-// Data access is delegated to the admins model.
+//archivo para manejar todo lo relacionado al admin para iniciar y cerrar sesión
 
 const bcrypt = require('bcrypt');
 const adminsModel = require('../models/admins.model');
 
-// Renders the login form
+//muestra el form de inicio de sesion
 function showLoginForm(req, res) {
   if (req.session && req.session.adminId) {
-    return res.redirect('/');
+    return res.redirect('/');         //si esta logeado redirige al dashboard
   }
-  res.render('login', { title: 'Login - Larry Penguin Admin', error: null });
+  res.render('login', { title: 'Login - Larry Penguin Admin', error: null });   //Si no hay sesion activa
 }
 
-// Validates credentials and creates the session
+//funncion que valida credenciales y crea sesion
 async function login(req, res) {
-  const { username, password } = req.body;
+  const { username, password } = req.body;    //extrae esos dos campos del body
 
-  if (!username || !password) {
+  if (!username || !password) {     //se validan los campos
     return res.render('login', {
       title: 'Login - Larry Penguin Admin',
       error: 'Username and password are required.',
@@ -24,7 +23,7 @@ async function login(req, res) {
   }
 
   try {
-    const admin = await adminsModel.findByUsername(username);
+    const admin = await adminsModel.findByUsername(username);  //se busca si existe el usuario en la bd
 
     if (!admin) {
       return res.render('login', {
@@ -32,7 +31,7 @@ async function login(req, res) {
         error: 'Invalid username or password.',
       });
     }
-
+    //se verifica si la contraseña es correcta
     const passwordMatches = await bcrypt.compare(password, admin.passwordHash);
 
     if (!passwordMatches) {
@@ -42,10 +41,11 @@ async function login(req, res) {
       });
     }
 
-    req.session.adminId = admin._id;
+    req.session.adminId = admin._id;   //se accede a la propiedad _id de admin y se agrega a una nueva propiedad adminId
     req.session.username = admin.username;
 
-    res.redirect('/');
+    res.redirect('/'); //redirecciona hacia el dashboard
+
   } catch (error) {
     console.error('❌ Login error:', error.message);
     res.render('login', {
@@ -55,9 +55,9 @@ async function login(req, res) {
   }
 }
 
-// Destroys the session and logs Paula out
+//funciom que destruye la sesion activa
 function logout(req, res) {
-  req.session.destroy((error) => {
+  req.session.destroy((error) => {     //usa callback
     if (error) {
       console.error('❌ Logout error:', error.message);
     }

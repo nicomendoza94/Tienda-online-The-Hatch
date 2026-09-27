@@ -1,6 +1,3 @@
-// Handles all CRUD operations for products.
-// Data access is delegated to the products model; this file focuses
-// on request/response handling, validation, and orchestration.
 
 const fs = require('fs');
 const path = require('path');
@@ -8,10 +5,10 @@ const productsModel = require('../models/products.model');
 
 const CATEGORIES = ['pescado', 'hielo', 'esmoquin'];
 
-// GET /products - list all products
+// GET /products, muestra todos los productos
 async function listProducts(req, res) {
   try {
-    const products = await productsModel.findAll();
+    const products = await productsModel.findAll();   //se pide al model todos los prod
 
     res.render('products/list', {
       title: 'Products - Admin Panel',
@@ -24,7 +21,7 @@ async function listProducts(req, res) {
   }
 }
 
-// GET /products/new - show the "create product" form
+// GET /products/new, muestra el formulario vacio para crear un producto nuevo
 function showNewForm(req, res) {
   res.render('products/new', {
     title: 'New Product - Admin Panel',
@@ -34,13 +31,14 @@ function showNewForm(req, res) {
   });
 }
 
-// POST /products - create a new product
+// POST /products, crea un nuevo producto
 async function createProduct(req, res) {
   const { name, description, price, stock, category } = req.body;
 
-  const priceNumber = Number(price);
+  const priceNumber = Number(price);  //convierte string a num
   const stockNumber = Number(stock);
 
+  //validacion de campos de texto obligatorios
   if (!name || !description || !category) {
     return res.render('products/new', {
       title: 'New Product - Admin Panel',
@@ -49,8 +47,8 @@ async function createProduct(req, res) {
       error: 'All fields are required.',
     });
   }
-
-  if (isNaN(priceNumber) || priceNumber <= 0) {
+  //validacion del precio
+  if (isNaN(priceNumber) || priceNumber <= 0) {   //si el precio no es un num val y menor o igual  a cero
     return res.render('products/new', {
       title: 'New Product - Admin Panel',
       username: req.session.username,
@@ -58,7 +56,7 @@ async function createProduct(req, res) {
       error: 'Price must be a number greater than 0.',
     });
   }
-
+  //validacion del stock
   if (isNaN(stockNumber) || stockNumber < 0) {
     return res.render('products/new', {
       title: 'New Product - Admin Panel',
@@ -67,7 +65,7 @@ async function createProduct(req, res) {
       error: 'Stock must be a number greater than or equal to 0.',
     });
   }
-
+  //validacion de que haya imagen
   if (!req.file) {
     return res.render('products/new', {
       title: 'New Product - Admin Panel',
@@ -76,11 +74,11 @@ async function createProduct(req, res) {
       error: 'Product image is required.',
     });
   }
-
+  //donde se guarda el producto
   try {
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const imageUrl = `/uploads/${req.file.filename}`;   //ruta relativa que se va a guardar en la bd
 
-    await productsModel.create({
+    await productsModel.create({     //para insertar el producto
       name,
       description,
       price: priceNumber,
@@ -91,7 +89,7 @@ async function createProduct(req, res) {
       updatedAt: new Date(),
     });
 
-    res.redirect('/products');
+    res.redirect('/products');   //redirige al listado completo de productos
   } catch (error) {
     console.error('❌ Error creating product:', error.message);
     res.render('products/new', {
@@ -103,7 +101,7 @@ async function createProduct(req, res) {
   }
 }
 
-// GET /products/:id/edit - show the "edit product" form
+//funcion para editar un producto
 async function showEditForm(req, res) {
   try {
     const product = await productsModel.findById(req.params.id);
@@ -112,7 +110,7 @@ async function showEditForm(req, res) {
       return res.status(404).send('Product not found');
     }
 
-    res.render('products/edit', {
+    res.render('products/edit', {        //si el producto si existe, renderiza
       title: 'Edit Product - Admin Panel',
       username: req.session.username,
       categories: CATEGORIES,
@@ -130,11 +128,11 @@ async function updateProduct(req, res) {
   const { id } = req.params;
   const { name, description, price, stock, category } = req.body;
 
-  const priceNumber = Number(price);
+  const priceNumber = Number(price);     //conversion de texto a numero
   const stockNumber = Number(stock);
 
   try {
-    const existingProduct = await productsModel.findById(id);
+    const existingProduct = await productsModel.findById(id);    //se busca el producto en la base de datos
 
     if (!existingProduct) {
       return res.status(404).send('Product not found');

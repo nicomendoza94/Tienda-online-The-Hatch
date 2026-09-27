@@ -13,18 +13,18 @@ const ordersRoutes = require('./routes/orders.routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// View engine
+//para renderizar una vista
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
-// Static files (CSS, uploaded images)
+//sirve archivos estaticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Parse form data (necesario para formularios de login, productos, etc.)
+//interpreta el body de los formularios
 app.use(express.urlencoded({ extended: true }));
 
-// Simula PUT/DELETE desde formularios HTML (que solo soportan GET/POST)
-// Busca el campo "_method" en el querystring o el body del form
+//simula PUT/DELETE desde formularios HTML,que solo soportan GET/POST
+//busca el campo "_method" en el querystring o el body del form
 app.use(methodOverride('_method'));
 
 async function startServer() {
@@ -33,28 +33,28 @@ async function startServer() {
   // Sessions (persistidas en MongoDB, no en memoria)
   app.use(session({
     secret: process.env.SESSION_SECRET,
-    resave: false,
+    resave: false,           //para no no reguardar la sesion en la base de datos en cada request
     saveUninitialized: false,
-    store: MongoStore.create({
+    store: MongoStore.create({           //donde guardar los datos de las sesiones
       mongoUrl: process.env.MONGO_URI,
       collectionName: 'sessions',
     }),
-    cookie: {
-      httpOnly: true,
+    cookie: {       //configuracion de la cookie que se manda al navegador
+      httpOnly: true,    //proteccion contra ataque XSS
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 1000 * 60 * 60 * 2, // 2 horas
+      maxAge: 1000 * 60 * 60 * 2, //tiempo de la cookie 2 horas
     },
   }));
 
-  // Auth routes (/login, /logout) - no requieren sesión activa
+  //rutas
   app.use('/', authRoutes);
 
-  // Product routes - todas protegidas, solo Paula puede gestionar productos
+  //solo admin puede gestionar productos
   app.use('/products', requireAuth, productsRoutes);
 
   app.use('/orders', requireAuth, ordersRoutes);
 
-  // Dashboard - protegido, requiere sesión activa
+  //Dashboard protegido, requiere sesion activa
   app.get('/', requireAuth, (req, res) => {
     res.render('dashboard', {
       title: 'Larry Penguin - Admin Panel',
